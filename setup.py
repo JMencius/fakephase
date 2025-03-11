@@ -1,10 +1,11 @@
 from setuptools import setup, find_namespace_packages
 setup(
     name = "fakephase",
-    package_dir={"": "pie"},
-    packages=find_namespace_packages(where="pie"),
+    package_dir={"": "src"},
+    packages=find_namespace_packages(where="src"),
     package_data={
-        "pie.module": ["*.py"],
+        "fakephase.modules": ["*.py"],
+        "fakephase.classes": ["*.py"],
     },
     version = "0.1.0",
     description = "Fake telomere-to-telomere haloptype phasing algorithm",
@@ -16,7 +17,8 @@ setup(
     install_requires = [
         "click>=8.1.8",
         "cyvcf2>=0.31.1",
-        "pysam"
+        "pyfastx>=2.2.0"
+        "pysam>=0.23.0"
         ],
     extras_require = {
         "dev": ["pytest"],
