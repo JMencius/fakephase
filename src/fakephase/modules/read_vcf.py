@@ -1,7 +1,7 @@
 import logging
 from cyvcf import VCF
 import sys
-from fakephase.classes.variant import myvariant
+from fakephase.classes.variant import fvariant
 
 
 def get_category(ref: str, alt: list) -> str:
@@ -16,7 +16,7 @@ def get_category(ref: str, alt: list) -> str:
     return ctype
 
 
-def read_vcf(filename: str, working_chr: str, no_indel: bool) -> dict:
+def read_vcf(filename: str, working_chr: str, no_indel: bool, no_low_qual: bool) -> dict:
     chr_variants = dict()
     for variant in VCF(filename, threads = 1):
         if variant.CHROM == working_chr:
@@ -32,9 +32,14 @@ def read_vcf(filename: str, working_chr: str, no_indel: bool) -> dict:
                 else:
                     if (category == "SNV") or (category == "INDEL"):
                         flag = 1
+                
+                if no_low_qual:
+                    if variant.FILTER == "LowQual":
+                        flag = 0
+
 
                 if flag:
-                    current_variant = myvariant(variant.CHROM, variant.POS, variant.REF, variant.ALT, left, right, category)
+                    current_variant = fvariant(variant.CHROM, variant.POS, variant.REF, variant.ALT, left, right, category)
                     if variant.POS not in chr_variants:
                         chr_variant[variant.POS] = current_variant
                     else:

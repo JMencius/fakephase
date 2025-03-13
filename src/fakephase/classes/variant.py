@@ -1,6 +1,6 @@
 
 
-class myvariant:
+class fvariant:
     def __init__(self, chrom, pos, ref, alt, left, right, category):
         self.chrom : str = chrom
         self.pos : int = pos
