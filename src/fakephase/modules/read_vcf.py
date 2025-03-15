@@ -1,5 +1,5 @@
 import logging
-from cyvcf import VCF
+from cyvcf2 import VCF
 import sys
 from fakephase.classes.variant import fvariant
 

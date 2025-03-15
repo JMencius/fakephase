@@ -12,7 +12,7 @@ def get_ref_len(reference_file: str, chrom: list) -> list:
             chr_len[name] = len(seq)
             exist.add(name)
 
-    if len(chr_len) != len(chrom):
+    if len(chr_len.keys()) != len(chrom):
         for i in chrom:
             if i not in exist:
                 logging.error(f"{i} not in reference file")

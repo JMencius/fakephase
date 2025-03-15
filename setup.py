@@ -13,19 +13,19 @@ setup(
     author_email = "zjmeng22@m.fudan.edu.cn",
     url = "https://github.com/JMencius/fakephase",
     keywords = ["fakephase", "haplotype", "phasing"],
-    python_requires = ">=3.10",
+    python_requires = ">=3.7",
     install_requires = [
         "click>=8.1.8",
         "cyvcf2>=0.31.1",
-        "pyfastx>=2.2.0"
-        "pysam>=0.23.0"
+        "pyfastx>=2.2.0",
+        "pysam>=0.23.0",
         ],
     extras_require = {
         "dev": ["pytest"],
         },
     entry_points={
     "console_scripts": [
-        "pie = fakephase.fakephase:main",
+        "fakephase = fakephase.fakephase:main",
         ],
     },
 )
