@@ -22,6 +22,8 @@ def build_phase_blocks(sign_edges: dict, mincoverage: int, conf: float) -> dict:
     uf = UnionFind()
     consistent_triangles = set()
 
+    edge_set = {(min(x, y), max(x, y)) for x, y in filtered_sign_edges.keys()}    
+
     # loop every possible triangle
     for a in adj_dict:
         neighbors = list(adj_dict[a])

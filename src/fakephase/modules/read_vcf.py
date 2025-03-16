@@ -41,7 +41,7 @@ def read_vcf(filename: str, working_chr: str, no_indel: bool, no_low_qual: bool)
                 if flag:
                     current_variant = fvariant(variant.CHROM, variant.POS, variant.REF, variant.ALT, left, right, category)
                     if variant.POS not in chr_variants:
-                        chr_variant[variant.POS] = current_variant
+                        chr_variants[variant.POS] = current_variant
                     else:
                         logging.WARNING(f"Site overlap in {variant.CHROM} at {variant.POS}, discard the second variant at this site")
     

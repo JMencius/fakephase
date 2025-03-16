@@ -3,32 +3,23 @@ import pysam
 import sys
 
 
-def is_snv_in_read(read, target_pos: int, variant) -> int:
-    """
-    return 0 means not in read
-    return -1 means left match
-    return 1 means right match
-    """
-    variant_pool = list(variant.ref) + variant.alt
-    read_base = read.query_sequence[target_pos]
-    if read_base == variant_pool[variant.left]:
-        return -1
-    elif read_base == variant_pool[variant.right]:
-        return 1
-    else:
-        return 0
 
 
-
-def get_cigar_type(ref_pos: int, target_pos: int, cigartuples: list) -> str:
+def get_cigar_type(ref_pos: int, target_pos: int, cigartuples: list, read, ref: str) -> str:
     # index for inside read
     query_pos = 0
+    target_pos += ref_pos
 
+    ref_fasta = pysam.FastaFile(ref)
     for cigartype, length in cigartuples:
         # Matches (M)
         if cigartype == 0:
             if ref_pos <= target_pos < ref_pos + length:
-                return 'M'
+                offset = target_pos - ref_pos
+                query_base = read.query_sequence[query_pos + offset]  # Read base in query sequence
+                ref_base = ref_fasta.fetch(read.reference_name, target_pos, target_pos + 1).upper()  # Reference sequence base
+                return 'M' if query_base == ref_base else 'X'                
+
             ref_pos += length
             query_pos += length
 
@@ -53,15 +44,15 @@ def get_cigar_type(ref_pos: int, target_pos: int, cigartuples: list) -> str:
 
 
 
-def is_indel_in_read(read, target_pos: int, variant) -> int:
+def is_variant_in_read(read, target_pos: int, variant, ref) -> int:
     """
     return 0 means not in read
     return -1 means left match
     return 1 means right match
     """
-    category = get_cigar_type(read.reference_start, target_pos, read.cigartuples)
+    category = get_cigar_type(read.reference_start, target_pos, read.cigartuples, read, ref)
     if not category:
-        logging.error("Target position {target_pos} not in {read.query_name}")
+        logging.error(f"Target position {target_pos} not in {read.query_name}, read starts at {read.reference_start}, span with Reference Length: {read.reference_length}")
         sys.exit(1)
     
     variant_pool = list(variant.ref) + variant.alt   
@@ -70,7 +61,12 @@ def is_indel_in_read(read, target_pos: int, variant) -> int:
             return -1
         if variant.right == 0:
             return 1
-    
+    elif category == 'X':
+        if variant.left != 0:
+            return -1
+        if variant.right != 0:
+            return 1    
+
     else:
         left_seq = variant_pool[variant.left]
         insert_seq = read.query_sequence[target_pos : target_pos + len(left_seq)]
@@ -86,6 +82,8 @@ def is_indel_in_read(read, target_pos: int, variant) -> int:
 
 def process_pairs(edges_list: list) -> list:
     processed_pairs = list()
+    if len(edges_list) <= 1:
+        return list()
     for i in range(len(edges_list) - 1):
         for j in range(i + 1, len(edges_list)):
             a = edges_list[i][0]
@@ -97,29 +95,30 @@ def process_pairs(edges_list: list) -> list:
 
 
 
-def process_read(read, variants: dict) -> list:
+def process_read(read, variants: dict, ref) -> list:
     edges_list = list()
-    for site in range(read.reference_start, read.reference_end + 1):
+    for site in range(read.reference_start, read.reference_end):
         if site in variants:
             subject_variant = variants[site]
             if subject_variant.category == "SNV":
-                edges_list.append((site, is_snv_in_read(read, site, variants)))
+                ##print(read.reference_start, site, read.reference_end)
+                pos = is_variant_in_read(read, site - read.reference_start, variants[site], ref)
+                if pos:
+                    edges_list.append((site, pos))
             if subject_variant.category == "INDEL":
-                edges_list.append((site, is_indel_in_read(read, site, variants)))               
+                pos = is_variant_in_read(read, site - read.reference_start, variants[site], ref)
+                if pos:
+                    edges_list.append((site, pos))               
     
-    signed_edges_in_read = process_paris(edges_list)
+    signed_edges_in_read = process_pairs(edges_list)
     
     return signed_edges_in_read
 
 
 
-def find_signed_edges(bamfile: str, maxlen: int, min_mapq: int, variants: dict, ref_len: dict, working_chr: str) -> dict:
+def find_signed_edges(bamfile: str, maxlen: int, min_mapq: int, variants: dict, ref_len: dict, working_chr: str, ref: str) -> dict:
     # region in pysam is [start, end)
-    if (maxlen + 1) < (ref_len[working_chr] - maxlen - 1):
-        regions = [(0, maxlen + 1), (ref_len[working_chr] - maxlen - 1, ref_len[working_chr])]
-    else:
-        regions = [(0, ref_len[working_chr])]    
-    
+    regions = [(0, maxlen + 1), (ref_len[working_chr] - maxlen - 1, ref_len[working_chr])]
 
     edges_dict = dict()
     with pysam.AlignmentFile(bamfile, "rb") as bam:
@@ -129,8 +128,8 @@ def find_signed_edges(bamfile: str, maxlen: int, min_mapq: int, variants: dict, 
                 if not read.is_unmapped:
                     # filter based on mapping quality threshold
                     if read.mapping_quality > min_mapq:
-                        edges_in_read = process_read(read, variants)
-                        for edg in edges_in_read
+                        edges_in_read = process_read(read, variants, ref)
+                        for edg in edges_in_read:
                             if (edg[0], edg[1]) not in edges_dict:
                                 edges_dict[(edg[0], edg[1])] = [0, 0]
                             if edg[2] == 1:
