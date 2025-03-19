@@ -16,7 +16,7 @@ def get_category(ref: str, alt: list) -> str:
     return ctype
 
 
-def read_vcf(filename: str, working_chr: str, no_indel: bool, no_low_qual: bool) -> dict:
+def read_vcf(filename: str, working_chr: str,  no_low_qual: bool) -> dict:
     chr_variants = dict()
     for variant in VCF(filename, threads = 1):
         if variant.CHROM == working_chr:
@@ -26,12 +26,8 @@ def read_vcf(filename: str, working_chr: str, no_indel: bool, no_low_qual: bool)
                 category = get_category(variant.REF, variant.ALT)
                 # set filter
                 flag = 0
-                if no_indel:
-                    if category == "SNV":
-                        flag = 1
-                else:
-                    if (category == "SNV") or (category == "INDEL"):
-                        flag = 1
+                if category == "SNV":
+                    flag = 1
                 
                 if no_low_qual:
                     if variant.FILTER == "LowQual":

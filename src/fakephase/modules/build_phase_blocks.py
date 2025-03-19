@@ -4,6 +4,7 @@ from fakephase.classes.unionfind import UnionFind
 
 def build_phase_blocks(sign_edges: dict, mincoverage: int, conf: float) -> dict:
     # prefilter connections based on coverage and confidence
+
     filtered_sign_edges = dict()
     for k, j in sign_edges.items():
          if (j[0] + j[1]) > mincoverage:
@@ -12,6 +13,8 @@ def build_phase_blocks(sign_edges: dict, mincoverage: int, conf: float) -> dict:
                     filtered_sign_edges[k] = 1
                 if j[0] < j[1]:
                     filtered_sign_edges[k] = -1
+    ## print(filtered_sign_edges)
+    
 
     # generate adjacent dict
     adj_dict = dict()
@@ -42,7 +45,7 @@ def build_phase_blocks(sign_edges: dict, mincoverage: int, conf: float) -> dict:
                         uf.union(b, c)                   
     
     blocks = uf.get_connected_components()
-    return blocks
+    return (blocks, filtered_sign_edges)
 
 
 def is_triangle_consistent(triangle: tuple, edge_dict: dict) -> bool:
