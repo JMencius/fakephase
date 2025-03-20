@@ -46,8 +46,10 @@ def find_closest_variants(variant_sites: list, mid_of_chrom: int) -> tuple:
     for i in variant_sites:
         dist.append((i, abs(i - mid_of_chrom)))
     dist.sort(key = lambda K : K[1])
-    
-    return (dist[0][0], dist[1][0])
+    pick = [dist[0][0], dist[1][0]]
+    pick.sort()    
+   
+    return pick
     
 
 
@@ -78,9 +80,7 @@ def fake_blocks(ref_len: dict, working_chr: str, variants: dict, triangled_block
     mid_sites = find_closest_variants(variants.keys(), ref_len[working_chr] // 2)
 
     total_actions = dict()
-    c = 0
     for t in [telomere_blocks1, telomere_blocks2]:
-        flag = 0
         for b in t:
             actions = dict()
             # parse action based on edges
@@ -98,10 +98,9 @@ def fake_blocks(ref_len: dict, working_chr: str, variants: dict, triangled_block
             for i in actions:                
                 actions[i] = (actions[i], ps_tag)                      
             total_actions.update(actions)
-        if flag:
-            total_actions[mid_sites[c]] = (1, ps_tag)
 
-        # index add 1 for mid_sites
-        c += 1
+    
+    total_actions[mid_sites[0]] = (1, max([min(b) for b in telomere_blocks1]))
+    total_actions[mid_sites[1]] = (1, min([min(b) for b in telomere_blocks2]))
     
     return total_actions
