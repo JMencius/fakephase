@@ -1,6 +1,6 @@
 # fakephase
 ## Critical warning
-:warning: <mark>**Do not use this software for haplotype phasing in any general scientific research, clinical applications, or production.**</mark>
+:warning: <mark>**Do not use this software for haplotype phasing in any general scientific research, clinical applications, industrial productionm, or other medical, commercial, and industrial applications.**</mark>
 
 ## Introduction
 Fake telomere-to-telomere haloptype phasing algorithm. 
