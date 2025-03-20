@@ -53,3 +53,8 @@ Options:
 fakephase --verbose -i merge_output.vcf -b ./HG00733.nanopore.R9.hac.sorted.bam -r GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta -o fake_output.vcf
 ```
 
+## Resource consumption
+In our tests with 176G nanopore BAM file, Fakephase completed processing within 3 hour using 24 threads with an [AMD EPYC 7K62 CPU](https://openbenchmarking.org/s/AMD+EPYC+7K62+48-Core).
+
+The actual performance may vary depending on factors such as I/O speed, memory speed, and CPU capabilities.
+
