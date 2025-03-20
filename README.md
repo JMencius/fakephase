@@ -50,7 +50,11 @@ Options:
 
 ## Examples
 ```
-fakephase --verbose -i merge_output.vcf -b ./HG00733.nanopore.R9.hac.sorted.bam -r GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta -o fake_output.vcf
+fakephase --verbose \
+-i merge_output.vcf \
+-b HG00733.nanopore.R9.hac.sorted.bam \
+-r GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta \
+-o fake_output.vcf;
 ```
 
 ## Resource consumption
