@@ -52,8 +52,6 @@ def main(invcf, bam, ref, output, threads, mincoverage, conf, maxlen, min_mapq, 
     # find first and last non N in reference
     logging.info("Finding start and end position")
     start_end_pos = find_start_pos(ref, chrom)
-    print(start_end_pos)
-    sys.exit(0)
 
     # read vcf file
     logging.info("Reading input VCF file")
@@ -75,7 +73,7 @@ def main(invcf, bam, ref, output, threads, mincoverage, conf, maxlen, min_mapq, 
     # fake phased blocks 
     logging.info("Frabricating phased blocks")
     with Pool(threads) as p:
-        faked_blocks = p.starmap(fake_blocks, [(ref_len, chrom[c], subject_variants[c], phased_blocks[c], filtered_edges[c], maxlen) for c in range(len(chrom))])
+        faked_blocks = p.starmap(fake_blocks, [(ref_len, chrom[c], subject_variants[c], phased_blocks[c], filtered_edges[c], maxlen, start_end_pos[c]) for c in range(len(chrom))])
 
     # output to vcf
     logging.info("Writing output VCF")
