@@ -34,13 +34,13 @@ Options:
   -o, --output TEXT      Output vcf file  [required]
   -t, --threads INTEGER  Maximum numbers of parallel threads [default: 24]
   --mincoverage INTEGER  Minimal signed edges to phase two variants [default:
-                         15]
-  --conf FLOAT           Minimal confidence to phase two variants [default:
-                         0.9]
-  --maxlen INTEGER       Maximal length to process [default: 10**7]
+                         30]
+  --conf FLOAT           Minimal confidence to phase two variants [default: 0.9]
+  --maxratio FLOAT       Maximal ratio of haplotype to process [default: 0.05]
   --min-mapq INTEGER     Minimal mapping quality (MAPQ)
   --chrom TEXT           Chromosome to evaluate,use comma to join chromosome
                          name e.g. --chrom chr1,chr2,chr3 [default: chr1-22]
+  --chunk-size INTEGER   Chunk size length for parallel processing
   --no-low-qual          Do not phase low quality variant (LowQual in filter
                          column)
   --verbose              Verbose mode print progess to standard output
@@ -54,7 +54,7 @@ fakephase --verbose -i merge_output.vcf -b ./HG00733.nanopore.R9.hac.sorted.bam 
 ```
 
 ## Resource consumption
-In our tests with 176G nanopore BAM file, Fakephase completed processing within 3 hour using 24 threads with an [AMD EPYC 7K62 CPU](https://openbenchmarking.org/s/AMD+EPYC+7K62+48-Core).
+In our tests with 176G nanopore BAM file, Fakephase completed processing within 3 hour using 48 threads with an [AMD EPYC 7K62 CPU](https://openbenchmarking.org/s/AMD+EPYC+7K62+48-Core).
 
 The actual performance may vary depending on factors such as I/O speed, memory speed, and CPU capabilities.
 
