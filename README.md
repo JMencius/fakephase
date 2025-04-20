@@ -3,7 +3,7 @@
 :warning: <mark>**Do not use this software for haplotype phasing in any general scientific research, clinical applications, industrial production, or other medical, commercial, and political applications.**</mark>
 
 ## Introduction
-Fake telomere-to-telomere haloptype phasing algorithm. 
+Fake telomere-to-telomere haloptype phasing algorithm. The aim of `fakephase` is to show that traditional haplotype phasing metrics can be `hacked`.
 
 ## Installation
 ### Option1. local installation
