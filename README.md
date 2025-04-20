@@ -48,7 +48,7 @@ Options:
   --help                 Show this message and exit.
 ```
 
-## Examples
+## Example
 ```
 fakephase --verbose \
 -i variants.vcf \
