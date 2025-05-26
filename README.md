@@ -13,10 +13,9 @@ conda create -n fakephase python=3.7;
 conda activate fakephase;
 ```
 
-2. Download fakephase and install with `pip`
+2. Download fakephase and install with `pip` locally
 ```
-git clone https://github.com/JMencius/fakephase;
-cd fakephase;
+# unzip the release of fakephase
 pip install .;
 ```
 
